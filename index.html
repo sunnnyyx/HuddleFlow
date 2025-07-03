@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HuddleFlow Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-sans">
+
+  <!-- Header -->
+  <header class="bg-white shadow-md p-4 flex justify-between items-center">
+    <h1 class="text-xl font-bold text-teal-600">HuddleFlow</h1>
+    <div class="flex items-center space-x-4">
+      <span class="text-gray-700">Hello, User</span>
+      <img src="https://via.placeholder.com/32" class="rounded-full" alt="User Avatar">
+    </div>
+  </header>
+
+  <!-- Main Layout -->
+  <div class="flex min-h-screen">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white shadow-md p-4 hidden md:block">
+      <nav class="space-y-4">
+        <a href="#" class="block text-gray-700 font-medium hover:text-teal-600">Dashboard</a>
+        <a href="#" class="block text-gray-700 font-medium hover:text-teal-600">Teams</a>
+        <a href="#" class="block text-gray-700 font-medium hover:text-teal-600">Retrospectives</a>
+        <a href="#" class="block text-gray-700 font-medium hover:text-teal-600">Tasks</a>
+        <a href="#" class="block text-gray-700 font-medium hover:text-teal-600">Settings</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6 space-y-10">
+
+      <!-- Retrospective Board -->
+      <section>
+        <h2 class="text-2xl font-semibold mb-4">Team Retrospective</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Column -->
+          <div class="bg-white p-4 rounded-xl shadow">
+            <h3 class="text-lg font-medium text-teal-600 mb-2">What Went Well</h3>
+            <ul class="space-y-2">
+              <li class="p-2 bg-teal-50 rounded">Good team communication</li>
+              <li class="p-2 bg-teal-50 rounded">Completed sprint goals</li>
+            </ul>
+            <button class="mt-4 px-4 py-2 bg-teal-600 text-white rounded">Add Note</button>
+          </div>
+
+          <!-- Column -->
+          <div class="bg-white p-4 rounded-xl shadow">
+            <h3 class="text-lg font-medium text-yellow-600 mb-2">What Didn’t Go Well</h3>
+            <ul class="space-y-2">
+              <li class="p-2 bg-yellow-50 rounded">Deployment delays</li>
+            </ul>
+            <button class="mt-4 px-4 py-2 bg-yellow-600 text-white rounded">Add Note</button>
+          </div>
+
+          <!-- Column -->
+          <div class="bg-white p-4 rounded-xl shadow">
+            <h3 class="text-lg font-medium text-red-600 mb-2">Action Items</h3>
+            <ul class="space-y-2">
+              <li class="p-2 bg-red-50 rounded">Improve deployment pipeline</li>
+            </ul>
+            <button class="mt-4 px-4 py-2 bg-red-600 text-white rounded">Add Note</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Workflow Board -->
+      <section>
+        <h2 class="text-2xl font-semibold mb-4">Workflow Board</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- To Do -->
+          <div class="bg-white p-4 rounded-xl shadow">
+            <h3 class="text-lg font-medium text-gray-800 mb-2">To Do</h3>
+            <ul class="space-y-2">
+              <li class="p-3 bg-gray-100 rounded">Set up authentication</li>
+            </ul>
+            <button class="mt-4 px-4 py-2 bg-gray-800 text-white rounded">Add Task</button>
+          </div>
+
+          <!-- In Progress -->
+          <div class="bg-white p-4 rounded-xl shadow">
+            <h3 class="text-lg font-medium text-blue-600 mb-2">In Progress</h3>
+            <ul class="space-y-2">
+              <li class="p-3 bg-blue-50 rounded">Design dashboard UI</li>
+            </ul>
+            <button class="mt-4 px-4 py-2 bg-blue-600 text-white rounded">Add Task</button>
+          </div>
+
+          <!-- Done -->
+          <div class="bg-white p-4 rounded-xl shadow">
+            <h3 class="text-lg font-medium text-green-600 mb-2">Done</h3>
+            <ul class="space-y-2">
+              <li class="p-3 bg-green-50 rounded">Setup project repo</li>
+            </ul>
+            <button class="mt-4 px-4 py-2 bg-green-600 text-white rounded">Add Task</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</body>
+</html>
