@@ -24,7 +24,7 @@
 - Tailwind CSS / Custom CSS
 - Icons via FontAwesome or Lucide
 
-**Backend (if applicable):**
+**Backend:**
 - Node.js + Express.js
 - Socket.IO (for real-time messaging)
 - MongoDB (or Firebase/SQL depending on DB choice)
