@@ -1,6 +1,5 @@
-// app.js
-
 document.addEventListener("DOMContentLoaded", () => {
+  // Handle Add Note/Task Buttons
   const addButtons = document.querySelectorAll(".add-note-btn");
 
   addButtons.forEach((button) => {
@@ -8,24 +7,44 @@ document.addEventListener("DOMContentLoaded", () => {
       const columnType = button.dataset.column;
       const noteList = document.querySelector(`.note-list[data-column="${columnType}"]`);
 
-      const userInput = prompt("Enter your note or task:");
-      if (!userInput || userInput.trim() === "") return;
-
-      const newNote = createNoteElement(userInput, columnType);
-      noteList.appendChild(newNote);
-
-      updateLocalStorage(columnType);
+      Swal.fire({
+        title: 'Add a Note or Task',
+        input: 'textarea',
+        inputLabel: 'Your text',
+        inputPlaceholder: 'Write something...',
+        showCancelButton: true,
+        confirmButtonText: 'Add',
+        confirmButtonColor: '#14b8a6', // Tailwind teal-500
+      }).then((result) => {
+        if (result.isConfirmed && result.value.trim() !== "") {
+          const userInput = result.value.trim();
+          const newNote = createNoteElement(userInput, columnType);
+          noteList.appendChild(newNote);
+          updateLocalStorage(columnType);
+        }
+      });
     });
   });
+
+  // Toggle sidebar on mobile
+  const menuToggle = document.getElementById("menuToggle");
+  const sidebar = document.getElementById("sidebar");
+
+  if (menuToggle && sidebar) {
+    menuToggle.addEventListener("click", () => {
+      sidebar.classList.toggle("hidden");
+    });
+  }
 
   loadNotesFromLocalStorage();
   initializeSortable();
 });
 
-// Create a new <li> element for the note/task
+// Create a new note/task element
 function createNoteElement(text, column, index = null) {
   const li = document.createElement("li");
-  li.className = "p-2 bg-gray-100 rounded mb-2 flex justify-between items-center";
+  li.className =
+    "p-2 bg-gray-100 rounded mb-2 flex justify-between items-center transition-all duration-300 ease-out opacity-0 scale-95";
 
   const span = document.createElement("span");
   span.textContent = text;
@@ -33,34 +52,64 @@ function createNoteElement(text, column, index = null) {
   const actions = document.createElement("div");
   actions.className = "space-x-2";
 
-  // Edit Button
+  // ✏️ Edit Button
   const editBtn = document.createElement("button");
   editBtn.textContent = "✏️";
   editBtn.title = "Edit";
   editBtn.onclick = () => {
-    const updated = prompt("Edit your note:", span.textContent);
-    if (!updated || updated.trim() === "") return;
-    span.textContent = updated;
-    updateLocalStorage(column);
+    Swal.fire({
+      title: 'Edit Note',
+      input: 'text',
+      inputLabel: 'Edit your task',
+      inputValue: span.textContent,
+      showCancelButton: true,
+      confirmButtonText: 'Save',
+      confirmButtonColor: '#14b8a6',
+    }).then((result) => {
+      if (result.isConfirmed && result.value.trim() !== "") {
+        span.textContent = result.value.trim();
+        updateLocalStorage(column);
+      }
+    });
   };
 
-  // Delete Button
+  // ❌ Delete Button
   const deleteBtn = document.createElement("button");
   deleteBtn.textContent = "❌";
   deleteBtn.title = "Delete";
   deleteBtn.onclick = () => {
-    li.remove();
-    updateLocalStorage(column);
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "This note will be deleted!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#e11d48', // Tailwind red-600
+      cancelButtonColor: '#6b7280', // Tailwind gray-500
+      confirmButtonText: 'Yes, delete it!',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        li.remove();
+        updateLocalStorage(column);
+        Swal.fire('Deleted!', 'Your note has been removed.', 'success');
+      }
+    });
   };
 
   actions.appendChild(editBtn);
   actions.appendChild(deleteBtn);
   li.appendChild(span);
   li.appendChild(actions);
+
+  // Animate on enter
+  setTimeout(() => {
+    li.classList.remove("opacity-0", "scale-95");
+    li.classList.add("opacity-100", "scale-100");
+  }, 10);
+
   return li;
 }
 
-// Load all saved notes/tasks on page load
+// Load notes/tasks from localStorage
 function loadNotesFromLocalStorage() {
   const savedData = JSON.parse(localStorage.getItem("huddleflow-data")) || {};
 
@@ -75,18 +124,18 @@ function loadNotesFromLocalStorage() {
   }
 }
 
-// Save current state of a single column to localStorage
+// Save notes for a single column
 function updateLocalStorage(column) {
   const list = document.querySelector(`.note-list[data-column="${column}"]`);
   const items = list.querySelectorAll("li span");
-  const updated = Array.from(items).map(item => item.textContent);
+  const updated = Array.from(items).map((item) => item.textContent);
 
   let allData = JSON.parse(localStorage.getItem("huddleflow-data")) || {};
   allData[column] = updated;
   localStorage.setItem("huddleflow-data", JSON.stringify(allData));
 }
 
-// Save state of all columns to localStorage (after drag-and-drop)
+// Save all lists (after drag-and-drop)
 function saveAllListsToLocalStorage() {
   const allLists = document.querySelectorAll(".note-list");
   const newData = {};
@@ -103,7 +152,7 @@ function saveAllListsToLocalStorage() {
   localStorage.setItem("huddleflow-data", JSON.stringify(newData));
 }
 
-// Enable drag-and-drop using Sortable.js
+// Initialize drag-and-drop functionality
 function initializeSortable() {
   const allLists = document.querySelectorAll(".note-list");
 
@@ -112,6 +161,8 @@ function initializeSortable() {
       group: "shared",
       animation: 150,
       onEnd: saveAllListsToLocalStorage,
+      onChoose: () => list.classList.add("drag-over"),
+      onUnchoose: () => list.classList.remove("drag-over"),
     });
   });
 }
