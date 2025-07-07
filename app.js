@@ -11,9 +11,8 @@ document.addEventListener("DOMContentLoaded", () => {
     greetingEl.textContent = `Hello, ${currentUser}`;
   }
 
-  // Handle Add Note/Task Buttons
+  // Add Note/Task
   const addButtons = document.querySelectorAll(".add-note-btn");
-
   addButtons.forEach((button) => {
     button.addEventListener("click", () => {
       const columnType = button.dataset.column;
@@ -38,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Handle logout
+  // Logout
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
@@ -47,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Sidebar toggle for mobile
+  // Mobile sidebar toggle
   const menuToggle = document.getElementById("menuToggle");
   const sidebar = document.getElementById("sidebar");
 
@@ -57,11 +56,69 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  initializeBoardSelector();
   loadNotesFromLocalStorage();
   initializeSortable();
 });
 
-// Create note card
+function getCurrentBoardKey() {
+  const user = localStorage.getItem("loggedInUser");
+  const data = JSON.parse(localStorage.getItem(`huddleflow-user-${user}`)) || {};
+  const board = data.currentBoard || "My First Board";
+  return { key: `huddleflow-user-${user}`, board };
+}
+
+function initializeBoardSelector() {
+  const boardSelector = document.getElementById("boardSelector");
+  const createBoardBtn = document.getElementById("createBoardBtn");
+  const newBoardInput = document.getElementById("newBoardName");
+
+  const currentUser = localStorage.getItem("loggedInUser");
+  if (!currentUser || !boardSelector || !createBoardBtn || !newBoardInput) return;
+
+  let userData = JSON.parse(localStorage.getItem(`huddleflow-user-${currentUser}`)) || {
+    currentBoard: "My First Board",
+    boards: { "My First Board": {} },
+  };
+
+  const boards = Object.keys(userData.boards);
+  const currentBoard = userData.currentBoard;
+
+  boardSelector.innerHTML = "";
+  boards.forEach((board) => {
+    const option = document.createElement("option");
+    option.value = board;
+    option.textContent = board;
+    if (board === currentBoard) option.selected = true;
+    boardSelector.appendChild(option);
+  });
+
+  boardSelector.onchange = () => {
+    userData.currentBoard = boardSelector.value;
+    localStorage.setItem(`huddleflow-user-${currentUser}`, JSON.stringify(userData));
+    reloadBoard();
+  };
+
+  createBoardBtn.onclick = () => {
+    const newBoard = newBoardInput.value.trim();
+    if (!newBoard || userData.boards[newBoard]) {
+      alert("Invalid or duplicate board name.");
+      return;
+    }
+    userData.boards[newBoard] = {};
+    userData.currentBoard = newBoard;
+    localStorage.setItem(`huddleflow-user-${currentUser}`, JSON.stringify(userData));
+    newBoardInput.value = "";
+    initializeBoardSelector();
+    reloadBoard();
+  };
+}
+
+function reloadBoard() {
+  document.querySelectorAll(".note-list").forEach(list => list.innerHTML = "");
+  loadNotesFromLocalStorage();
+}
+
 function createNoteElement(text, column) {
   const li = document.createElement("li");
   li.className =
@@ -74,7 +131,6 @@ function createNoteElement(text, column) {
   const actions = document.createElement("div");
   actions.className = "space-x-2 flex items-center";
 
-  // Edit Button
   const editBtn = document.createElement("button");
   editBtn.innerHTML = '<i class="fas fa-pen text-yellow-400"></i>';
   editBtn.title = "Edit";
@@ -96,7 +152,6 @@ function createNoteElement(text, column) {
     });
   };
 
-  // Delete Button
   const deleteBtn = document.createElement("button");
   deleteBtn.innerHTML = '<i class="fas fa-trash text-red-500"></i>';
   deleteBtn.title = "Delete";
@@ -124,7 +179,6 @@ function createNoteElement(text, column) {
   li.appendChild(span);
   li.appendChild(actions);
 
-  // Animate entry
   setTimeout(() => {
     li.classList.remove("scale-95", "opacity-0");
     li.classList.add("scale-100", "opacity-100");
@@ -133,59 +187,75 @@ function createNoteElement(text, column) {
   return li;
 }
 
-// Load notes from localStorage
 function loadNotesFromLocalStorage() {
   const currentUser = localStorage.getItem("loggedInUser");
   if (!currentUser) return;
 
-  const savedData = JSON.parse(localStorage.getItem(`huddleflow-data-${currentUser}`)) || {};
+  const userData = JSON.parse(localStorage.getItem(`huddleflow-user-${currentUser}`));
+  if (!userData || !userData.boards) return;
 
-  for (let columnKey in savedData) {
+  const currentBoard = userData.currentBoard || "My First Board";
+  const boardData = userData.boards[currentBoard] || {};
+
+  for (let columnKey in boardData) {
     const list = document.querySelector(`.note-list[data-column="${columnKey}"]`);
     if (!list) continue;
 
-    savedData[columnKey].forEach((text) => {
+    boardData[columnKey].forEach((text) => {
       const li = createNoteElement(text, columnKey);
       list.appendChild(li);
     });
   }
 }
 
-// Save notes for a column
 function updateLocalStorage(column) {
   const currentUser = localStorage.getItem("loggedInUser");
   if (!currentUser) return;
 
   const list = document.querySelector(`.note-list[data-column="${column}"]`);
   const items = list.querySelectorAll("li span");
-  const updated = Array.from(items).map((item) => item.textContent);
+  const updatedNotes = Array.from(items).map((item) => item.textContent);
 
-  let allData = JSON.parse(localStorage.getItem(`huddleflow-data-${currentUser}`)) || {};
-  allData[column] = updated;
-  localStorage.setItem(`huddleflow-data-${currentUser}`, JSON.stringify(allData));
+  const userData = JSON.parse(localStorage.getItem(`huddleflow-user-${currentUser}`)) || {
+    currentBoard: "My First Board",
+    boards: {}
+  };
+
+  const currentBoard = userData.currentBoard || "My First Board";
+
+  if (!userData.boards[currentBoard]) {
+    userData.boards[currentBoard] = {};
+  }
+
+  userData.boards[currentBoard][column] = updatedNotes;
+  localStorage.setItem(`huddleflow-user-${currentUser}`, JSON.stringify(userData));
 }
 
-// Save all columns (used after drag)
 function saveAllListsToLocalStorage() {
   const currentUser = localStorage.getItem("loggedInUser");
   if (!currentUser) return;
 
+  const userData = JSON.parse(localStorage.getItem(`huddleflow-user-${currentUser}`)) || {
+    currentBoard: "My First Board",
+    boards: {}
+  };
+
+  const currentBoard = userData.currentBoard || "My First Board";
   const allLists = document.querySelectorAll(".note-list");
-  const newData = {};
+  const newBoardData = {};
 
   allLists.forEach((list) => {
     const column = list.dataset.column;
-    newData[column] = [];
-
+    newBoardData[column] = [];
     list.querySelectorAll("li span").forEach((item) => {
-      newData[column].push(item.textContent);
+      newBoardData[column].push(item.textContent);
     });
   });
 
-  localStorage.setItem(`huddleflow-data-${currentUser}`, JSON.stringify(newData));
+  userData.boards[currentBoard] = newBoardData;
+  localStorage.setItem(`huddleflow-user-${currentUser}`, JSON.stringify(userData));
 }
 
-// Drag-and-drop
 function initializeSortable() {
   const allLists = document.querySelectorAll(".note-list");
 

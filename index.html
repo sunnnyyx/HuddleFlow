@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>HuddleFlow Dashboard</title>
 
-   <script>
+  <script>
     if (!localStorage.getItem("loggedInUser")) {
       window.location.href = "auth.html";
     }
@@ -23,7 +23,12 @@
   <style>
     body {
       font-family: 'Inter', sans-serif;
+      background-image: url('auth-bg.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
     }
+
     .drag-over {
       background-color: #f0fdf4;
       border: 2px dashed #22c55e;
@@ -32,7 +37,7 @@
   </style>
 </head>
 
-<body class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white min-h-screen">
+<body class="bg-gray-900 bg-opacity-95 text-white min-h-screen relative">
 
 <!-- Header -->
 <header class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg p-4 flex justify-between items-center">
@@ -53,100 +58,111 @@
   </div>
 </header>
 
-  <!-- Main Layout -->
-  <div class="flex">
+<!-- Main Layout -->
+<div class="flex">
 
-    <!-- Sidebar -->
-    <aside id="sidebar" class="w-64 -translate-x-full md:translate-x-0 fixed top-0 left-0 h-full z-50 md:block md:static md:h-auto bg-white/10 backdrop-blur-md p-6 shadow-xl rounded-r-xl space-y-4 transition-transform duration-300">
-      <nav class="space-y-2 text-white">
-        <a href="#" class="block px-2 py-2 rounded hover:bg-white/10 transition">Dashboard</a>
-        <a href="#" class="block px-2 py-2 rounded hover:bg-white/10 transition">Teams</a>
-        <a href="#" class="block px-2 py-2 rounded hover:bg-white/10 transition">Retrospectives</a>
-        <a href="#" class="block px-2 py-2 rounded hover:bg-white/10 transition">Tasks</a>
-        <a href="#" class="block px-2 py-2 rounded hover:bg-white/10 transition">Settings</a>
-      </nav>
-    </aside>
+  <!-- Sidebar -->
+  <aside id="sidebar" class="w-64 -translate-x-full md:translate-x-0 fixed top-0 left-0 h-full z-50 md:block md:static md:h-auto bg-white/10 backdrop-blur-md p-6 shadow-xl rounded-r-xl space-y-4 transition-transform duration-300">
+    <nav class="space-y-2 text-white">
+      <a href="#" class="block px-2 py-2 rounded hover:bg-white/10 transition">Dashboard</a>
+      <a href="#" class="block px-2 py-2 rounded hover:bg-white/10 transition">Teams</a>
+      <a href="#" class="block px-2 py-2 rounded hover:bg-white/10 transition">Retrospectives</a>
+      <a href="#" class="block px-2 py-2 rounded hover:bg-white/10 transition">Tasks</a>
+      <a href="#" class="block px-2 py-2 rounded hover:bg-white/10 transition">Settings</a>
+    </nav>
+  </aside>
 
-    <!-- Main Content -->
-    <main class="flex-1 p-6 space-y-10">
+  <!-- Main Content -->
+  <main class="flex-1 p-6 space-y-10">
 
-      <!-- Retrospective Board -->
-      <section>
-        <h2 class="text-3xl font-semibold mb-6">Team Retrospective</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- Retrospective Board -->
+    <section>
+      <h2 class="text-3xl font-semibold mb-6">Team Retrospective</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-          <!-- What Went Well -->
-          <div class="bg-gradient-to-br from-emerald-400 to-teal-500 p-5 rounded-2xl shadow-lg">
-            <h3 class="text-lg font-semibold mb-3">What Went Well</h3>
-            <ul class="note-list space-y-3" data-column="went-well"></ul>
-            <button class="add-note-btn mt-4 px-4 py-2 bg-white text-teal-700 font-semibold rounded-full hover:bg-teal-100 transition" data-column="went-well">
-              <i class="fas fa-plus mr-1"></i>Add Note
-            </button>
-          </div>
-
-          <!-- What Didn't Go Well -->
-          <div class="bg-gradient-to-br from-yellow-400 to-orange-500 p-5 rounded-2xl shadow-lg">
-            <h3 class="text-lg font-semibold mb-3">What Didn’t Go Well</h3>
-            <ul class="note-list space-y-3" data-column="didnt-go-well"></ul>
-            <button class="add-note-btn mt-4 px-4 py-2 bg-white text-yellow-700 font-semibold rounded-full hover:bg-yellow-100 transition" data-column="didnt-go-well">
-              <i class="fas fa-plus mr-1"></i>Add Note
-            </button>
-          </div>
-
-          <!-- Action Items -->
-          <div class="bg-gradient-to-br from-rose-500 to-red-600 p-5 rounded-2xl shadow-lg">
-            <h3 class="text-lg font-semibold mb-3">Action Items</h3>
-            <ul class="note-list space-y-3" data-column="action-items"></ul>
-            <button class="add-note-btn mt-4 px-4 py-2 bg-white text-red-700 font-semibold rounded-full hover:bg-red-100 transition" data-column="action-items">
-              <i class="fas fa-plus mr-1"></i>Add Note
-            </button>
-          </div>
-
+        <!-- What Went Well -->
+        <div class="bg-gradient-to-br from-emerald-400 to-teal-500 p-5 rounded-2xl shadow-lg">
+          <h3 class="text-lg font-semibold mb-3">What Went Well</h3>
+          <ul class="note-list space-y-3" data-column="went-well"></ul>
+          <button class="add-note-btn mt-4 px-4 py-2 bg-white text-teal-700 font-semibold rounded-full hover:bg-teal-100 transition" data-column="went-well">
+            <i class="fas fa-plus mr-1"></i>Add Note
+          </button>
         </div>
-      </section>
 
-      <!-- Workflow Board -->
-      <section>
-        <h2 class="text-3xl font-semibold mb-6">Workflow Board</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-          <!-- To Do -->
-          <div class="bg-gradient-to-br from-gray-700 to-gray-900 p-5 rounded-2xl shadow-lg">
-            <h3 class="text-lg font-semibold mb-3">To Do</h3>
-            <ul class="note-list space-y-3" data-column="todo"></ul>
-            <button class="add-note-btn mt-4 px-4 py-2 bg-white text-gray-800 font-semibold rounded-full hover:bg-gray-100 transition" data-column="todo">
-              <i class="fas fa-plus mr-1"></i>Add Task
-            </button>
-          </div>
-
-          <!-- In Progress -->
-          <div class="bg-gradient-to-br from-sky-500 to-indigo-600 p-5 rounded-2xl shadow-lg">
-            <h3 class="text-lg font-semibold mb-3">In Progress</h3>
-            <ul class="note-list space-y-3" data-column="in-progress"></ul>
-            <button class="add-note-btn mt-4 px-4 py-2 bg-white text-blue-700 font-semibold rounded-full hover:bg-blue-100 transition" data-column="in-progress">
-              <i class="fas fa-plus mr-1"></i>Add Task
-            </button>
-          </div>
-
-          <!-- Done -->
-          <div class="bg-gradient-to-br from-green-400 to-emerald-600 p-5 rounded-2xl shadow-lg">
-            <h3 class="text-lg font-semibold mb-3">Done</h3>
-            <ul class="note-list space-y-3" data-column="done"></ul>
-            <button class="add-note-btn mt-4 px-4 py-2 bg-white text-green-700 font-semibold rounded-full hover:bg-green-100 transition" data-column="done">
-              <i class="fas fa-plus mr-1"></i>Add Task
-            </button>
-          </div>
-
+        <!-- What Didn't Go Well -->
+        <div class="bg-gradient-to-br from-yellow-400 to-orange-500 p-5 rounded-2xl shadow-lg">
+          <h3 class="text-lg font-semibold mb-3">What Didn’t Go Well</h3>
+          <ul class="note-list space-y-3" data-column="didnt-go-well"></ul>
+          <button class="add-note-btn mt-4 px-4 py-2 bg-white text-yellow-700 font-semibold rounded-full hover:bg-yellow-100 transition" data-column="didnt-go-well">
+            <i class="fas fa-plus mr-1"></i>Add Note
+          </button>
         </div>
-      </section>
-    </main>
-  </div>
 
-  <!-- JS Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="app.js"></script>
-  <script>
+        <!-- Action Items -->
+        <div class="bg-gradient-to-br from-rose-500 to-red-600 p-5 rounded-2xl shadow-lg">
+          <h3 class="text-lg font-semibold mb-3">Action Items</h3>
+          <ul class="note-list space-y-3" data-column="action-items"></ul>
+          <button class="add-note-btn mt-4 px-4 py-2 bg-white text-red-700 font-semibold rounded-full hover:bg-red-100 transition" data-column="action-items">
+            <i class="fas fa-plus mr-1"></i>Add Note
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Workflow Board -->
+    <section>
+      <h2 class="text-3xl font-semibold mb-6">Workflow Board</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <!-- To Do -->
+        <div class="bg-gradient-to-br from-gray-700 to-gray-900 p-5 rounded-2xl shadow-lg">
+          <h3 class="text-lg font-semibold mb-3">To Do</h3>
+          <ul class="note-list space-y-3" data-column="todo"></ul>
+          <button class="add-note-btn mt-4 px-4 py-2 bg-white text-gray-800 font-semibold rounded-full hover:bg-gray-100 transition" data-column="todo">
+            <i class="fas fa-plus mr-1"></i>Add Task
+          </button>
+        </div>
+
+        <!-- In Progress -->
+        <div class="bg-gradient-to-br from-sky-500 to-indigo-600 p-5 rounded-2xl shadow-lg">
+          <h3 class="text-lg font-semibold mb-3">In Progress</h3>
+          <ul class="note-list space-y-3" data-column="in-progress"></ul>
+          <button class="add-note-btn mt-4 px-4 py-2 bg-white text-blue-700 font-semibold rounded-full hover:bg-blue-100 transition" data-column="in-progress">
+            <i class="fas fa-plus mr-1"></i>Add Task
+          </button>
+        </div>
+
+        <!-- Done -->
+        <div class="bg-gradient-to-br from-green-400 to-emerald-600 p-5 rounded-2xl shadow-lg">
+          <h3 class="text-lg font-semibold mb-3">Done</h3>
+          <ul class="note-list space-y-3" data-column="done"></ul>
+          <button class="add-note-btn mt-4 px-4 py-2 bg-white text-green-700 font-semibold rounded-full hover:bg-green-100 transition" data-column="done">
+            <i class="fas fa-plus mr-1"></i>Add Task
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Board Selector -->
+    <section class="mt-8 bg-white/10 backdrop-blur-md p-5 rounded-xl shadow-lg text-white">
+      <h2 class="text-xl font-semibold mb-4">Select or Create a Board</h2>
+      <div class="flex gap-4 flex-wrap items-center">
+        <select id="boardSelector" class="p-2 rounded bg-white/20 text-white"></select>
+        <input type="text" id="newBoardName" placeholder="New board name" class="p-2 rounded bg-white/20 text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-teal-400"/>
+        <button id="createBoardBtn" class="px-4 py-2 bg-teal-500 text-white rounded hover:bg-teal-600 transition">Create Board</button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- JS Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="app.js"></script>
+<script>
   document.getElementById("logoutBtn").addEventListener("click", () => {
     localStorage.removeItem("loggedInUser");
     window.location.href = "auth.html";
