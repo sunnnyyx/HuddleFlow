@@ -43,18 +43,10 @@
 <header class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg p-4 flex justify-between items-center">
   <h1 class="text-2xl font-bold">HuddleFlow</h1>
   <div class="flex items-center space-x-4">
-    <span>Hello, User</span>
+    <span id="userGreeting">Hello, User</span>
     <img src="https://via.placeholder.com/32" class="rounded-full" alt="User Avatar">
-    
-    <!-- 🔘 Logout Button -->
-    <button id="logoutBtn" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-white text-sm">
-      Logout
-    </button>
-
-    <!-- ☰ Menu Button (mobile) -->
-    <button id="menuToggle" class="md:hidden text-white focus:outline-none text-xl">
-      ☰
-    </button>
+    <button id="logoutBtn" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-white text-sm">Logout</button>
+    <button id="menuToggle" class="md:hidden text-white focus:outline-none text-xl">☰</button>
   </div>
 </header>
 
@@ -152,6 +144,11 @@
         <select id="boardSelector" class="p-2 rounded bg-white/20 text-white"></select>
         <input type="text" id="newBoardName" placeholder="New board name" class="p-2 rounded bg-white/20 text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-teal-400"/>
         <button id="createBoardBtn" class="px-4 py-2 bg-teal-500 text-white rounded hover:bg-teal-600 transition">Create Board</button>
+        <button id="exportBoardBtn" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition">Export Board</button>
+        <button id="renameBoardBtn" class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition">Rename Board</button>
+        <button id="deleteBoardBtn" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition">Delete Board</button>
+        <input type="file" id="importBoardInput" accept="application/json" class="hidden" />
+        <button id="importBoardBtn" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">Import Board</button>
       </div>
     </section>
 

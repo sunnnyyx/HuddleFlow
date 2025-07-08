@@ -5,13 +5,11 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // Update greeting
   const greetingEl = document.getElementById("userGreeting");
   if (greetingEl) {
     greetingEl.textContent = `Hello, ${currentUser}`;
   }
 
-  // Add Note/Task
   const addButtons = document.querySelectorAll(".add-note-btn");
   addButtons.forEach((button) => {
     button.addEventListener("click", () => {
@@ -37,7 +35,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Logout
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
@@ -46,10 +43,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Mobile sidebar toggle
   const menuToggle = document.getElementById("menuToggle");
   const sidebar = document.getElementById("sidebar");
-
   if (menuToggle && sidebar) {
     menuToggle.addEventListener("click", () => {
       sidebar.classList.toggle("-translate-x-full");
@@ -59,19 +54,78 @@ document.addEventListener("DOMContentLoaded", () => {
   initializeBoardSelector();
   loadNotesFromLocalStorage();
   initializeSortable();
-});
 
-function getCurrentBoardKey() {
-  const user = localStorage.getItem("loggedInUser");
-  const data = JSON.parse(localStorage.getItem(`huddleflow-user-${user}`)) || {};
-  const board = data.currentBoard || "My First Board";
-  return { key: `huddleflow-user-${user}`, board };
-}
+  const exportBtn = document.getElementById("exportBoardBtn");
+  if (exportBtn) {
+    exportBtn.addEventListener("click", () => {
+      const currentUser = localStorage.getItem("loggedInUser");
+      const userData = JSON.parse(localStorage.getItem(`huddleflow-user-${currentUser}`));
+      if (!userData || !userData.currentBoard) return alert("No board data found.");
+
+      const boardName = userData.currentBoard;
+      const boardData = userData.boards[boardName];
+      const json = JSON.stringify({ boards: { [boardName]: boardData }, currentBoard: boardName }, null, 2);
+
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${boardName}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+    });
+  }
+
+  const importBtn = document.getElementById("importBoardBtn");
+  const importInput = document.getElementById("importBoardInput");
+
+  if (importBtn && importInput) {
+    importBtn.addEventListener("click", () => {
+      importInput.click();
+    });
+
+    importInput.addEventListener("change", (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+          const currentUser = localStorage.getItem("loggedInUser");
+          if (!currentUser || !data || !data.boards || !data.currentBoard) {
+            alert("Invalid file format.");
+            return;
+          }
+
+          const userData = JSON.parse(localStorage.getItem(`huddleflow-user-${currentUser}`)) || {
+            boards: {},
+            currentBoard: "My First Board"
+          };
+
+          // Merge imported board into existing user data
+          userData.boards = { ...userData.boards, ...data.boards };
+          userData.currentBoard = data.currentBoard;
+
+          localStorage.setItem(`huddleflow-user-${currentUser}`, JSON.stringify(userData));
+          initializeBoardSelector();
+          reloadBoard();
+          alert("Board imported successfully.");
+        } catch (error) {
+          alert("Failed to import board. Invalid JSON.");
+        }
+      };
+      reader.readAsText(file);
+    });
+  }
+});
 
 function initializeBoardSelector() {
   const boardSelector = document.getElementById("boardSelector");
   const createBoardBtn = document.getElementById("createBoardBtn");
   const newBoardInput = document.getElementById("newBoardName");
+  const renameBoardBtn = document.getElementById("renameBoardBtn");
+  const deleteBoardBtn = document.getElementById("deleteBoardBtn");
 
   const currentUser = localStorage.getItem("loggedInUser");
   if (!currentUser || !boardSelector || !createBoardBtn || !newBoardInput) return;
@@ -112,10 +166,47 @@ function initializeBoardSelector() {
     initializeBoardSelector();
     reloadBoard();
   };
+
+  if (renameBoardBtn) {
+    renameBoardBtn.addEventListener("click", () => {
+      const oldName = boardSelector.value;
+      const newName = prompt("Enter new board name:", oldName);
+      if (!newName || newName === oldName || userData.boards[newName]) {
+        alert("Invalid or duplicate name.");
+        return;
+      }
+      userData.boards[newName] = userData.boards[oldName];
+      delete userData.boards[oldName];
+      if (userData.currentBoard === oldName) {
+        userData.currentBoard = newName;
+      }
+      localStorage.setItem(`huddleflow-user-${currentUser}`, JSON.stringify(userData));
+      initializeBoardSelector();
+      reloadBoard();
+    });
+  }
+
+  if (deleteBoardBtn) {
+    deleteBoardBtn.addEventListener("click", () => {
+      const boardToDelete = boardSelector.value;
+      if (!confirm(`Are you sure you want to delete "${boardToDelete}"?`)) return;
+
+      delete userData.boards[boardToDelete];
+      const remaining = Object.keys(userData.boards);
+      userData.currentBoard = remaining[0] || "My First Board";
+      if (!userData.boards[userData.currentBoard]) {
+        userData.boards[userData.currentBoard] = {};
+      }
+
+      localStorage.setItem(`huddleflow-user-${currentUser}`, JSON.stringify(userData));
+      initializeBoardSelector();
+      reloadBoard();
+    });
+  }
 }
 
 function reloadBoard() {
-  document.querySelectorAll(".note-list").forEach(list => list.innerHTML = "");
+  document.querySelectorAll(".note-list").forEach((list) => (list.innerHTML = ""));
   loadNotesFromLocalStorage();
 }
 
@@ -137,13 +228,13 @@ function createNoteElement(text, column) {
   editBtn.className = "hover:scale-110 transform transition";
   editBtn.onclick = () => {
     Swal.fire({
-      title: 'Edit Note',
-      input: 'text',
-      inputLabel: 'Edit your task',
+      title: "Edit Note",
+      input: "text",
+      inputLabel: "Edit your task",
       inputValue: span.textContent,
       showCancelButton: true,
-      confirmButtonText: 'Save',
-      confirmButtonColor: '#14b8a6',
+      confirmButtonText: "Save",
+      confirmButtonColor: "#14b8a6",
     }).then((result) => {
       if (result.isConfirmed && result.value.trim() !== "") {
         span.textContent = result.value.trim();
@@ -158,18 +249,18 @@ function createNoteElement(text, column) {
   deleteBtn.className = "hover:scale-110 transform transition";
   deleteBtn.onclick = () => {
     Swal.fire({
-      title: 'Are you sure?',
+      title: "Are you sure?",
       text: "This note will be deleted!",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#e11d48',
-      cancelButtonColor: '#6b7280',
-      confirmButtonText: 'Yes, delete it!',
+      confirmButtonColor: "#e11d48",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
         li.remove();
         updateLocalStorage(column);
-        Swal.fire('Deleted!', 'Your note has been removed.', 'success');
+        Swal.fire("Deleted!", "Your note has been removed.", "success");
       }
     });
   };
